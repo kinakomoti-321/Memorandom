@@ -1,5 +1,11 @@
 baseURL = "http://example.org/"
-languageCode = "en-us"
+languageCode = "ja-jp"
 title = "3D Memorandom"
 theme = "hugo-blog-jeffprod"
 publishDir = "docs"
+
+[permalinks]
+    post = "/:year/:filename"
+[taxonomies]
+    tag = "tags"
+    archive = "archives"
