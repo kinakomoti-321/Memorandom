@@ -1,4 +1,4 @@
-baseURL = "http://example.org/"
+baseURL = "https://kinakomoti-321.github.io"
 languageCode = "ja-jp"
 title = "3D Memorandom"
 theme = "hugo-blog-jeffprod"
