@@ -1,4 +1,4 @@
-baseURL = "https://kinakomoti-321.github.io"
+baseURL = "https://kinakomoti-321.github.io/Memorandom/"
 languageCode = "ja-jp"
 title = "3D Memorandom"
 theme = "hugo-blog-jeffprod"
