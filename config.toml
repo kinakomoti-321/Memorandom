@@ -3,7 +3,7 @@ languageCode = "ja-jp"
 title = "3D Memorandom"
 theme = "hugo-blog-jeffprod"
 publishDir = "docs"
-
+hasCJKLanguage = true
 [permalinks]
     post = "/:year/:filename"
 [taxonomies]
