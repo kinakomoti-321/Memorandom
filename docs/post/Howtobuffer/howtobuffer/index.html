@@ -4,202 +4,229 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <title>3D Memorandom  | ShadertoyでBufferを使ってパストレーサーを実装した</title>
+    <title>3D Memorandom | ShadertoyでBufferを使ってパストレーサーを実装した</title>
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <link href="https://fonts.googleapis.com/css?family=Open+Sans" rel="stylesheet">
     <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bulma/0.7.1/css/bulma.min.css" />
     <link rel="stylesheet" href="https://kinakomoti-321.github.io/Memorandom/%20css/blog.css" />
-    </head>
+</head>
 
 <body>
 
-    
+
     <nav class="navbar is-fixed-top" role="navigation" aria-label="main navigation">
         <div class="navbar-brand">
             <a class="navbar-item" href="https://kinakomoti-321.github.io/Memorandom/">Home</a>
         </div>
     </nav>
-    
 
-    
+
+
     <section class="hero is-info is-medium">
-        <div class="hero-body" style="background-image: url(https://kinakomoti-321.github.io/Memorandom/%20img/bg-blog.jpg);">
+        <div class="hero-body"
+            style="background-image: url(https://kinakomoti-321.github.io/Memorandom/%20img/bg-blog.jpg);">
             <div class="container has-text-centered">
                 <br>
                 <h1 class="title is-size-1">
-                    
+
                     ShadertoyでBufferを使ってパストレーサーを実装した
-                    
+
                 </h1>
-                
+
             </div>
         </div>
     </section>
 
-<div class="container">
-    <div class="section">
-    
+    <div class="container">
+        <div class="section">
 
-<div class="columns">
-    <div class="column is-9">
-        <div class="tile is-child box">
-            <div class="content">
-                <p>　数々の素晴らしい<del>変態</del>シェーダーが投稿されているShadertoyだが、私のような初心者は何をやっているかさっぱりわからず「すごいなあ」としか言えない。
-今年からレイトレーシングを学び始めて、	「Shadertoyでもレイトレできないだろうか」と考えて調べてみると結構な量のレイトレを実装したシェーダーが投稿されいるのを見て、やれるんだったらやってみようとしました。</p>
-<p>　私も前の描画さえ持ち出せればそれっぽいのは作れるんじゃないかと考えていたのですが、肝心の描画持ち出しのやり方がわからず、また投稿されてるシェーダーを見ても中々何をやってるかがわからないものでしばらくどんづまっていました。
-　</p>
-<p>最近になってようやく色々調べていくうちにShadertoyには描画情報を保存できるチャンネルと別々の描画処理をできるBufferという機能があることを知って、何とかパストレーシングの実装に漕ぎつくことができました。
-Bufferについての日本語記事がほとんどなかった（私が調べきれてないだけかも）ので折角なので私が実装したパストレーサーとともにBufferの使い方などをまとめておこうと思います。</p>
-<p>※著者の勉強不足のため、間違っている記述があるかもしれないことに留意してください。</p>
-<h2 id="shadertoyのichannel">ShaderToyのiChannel</h2>
-<p>ShaderToyのコードの場所の下に何やらiChannel0などと書かれるものがあります。これがチャンネルと呼ばれるもので、ShaderToyでテクスチャなどを使用したいとなるとこのiChannelにそれらを設定し、そこから読み取るという形で行います。</p>
-<p><img src="./media/pic1.jpg" alt="test"></p>
-<p>チャンネルの場所をクリックすると色々と選択できるタブが出てくると思いますが、ここはShaderToyが用意しているテクスチャや動画、音声そしてBufferを選択することで、チャンネルにそれらを設定することができます。</p>
-<p>チャンネルから設定したものの情報を受け取る方法についてはチャンネルに設定したものによって異なる。</p>
-<ul>
-<li>BufferやTextureの場合</li>
-</ul>
-<p>BufferまたはTextureの場合、Textureという関数にチャンネル名とuvを与えることで情報を得ることができる。この場合ではTexture関数はvec4で色を返す。</p>
-<p><code> vec4 col = Texture(iChannel0,uv)</code></p>
-<ul>
-<li>CubeMapの場合</li>
-</ul>
-<p>CubeMapは背景用のテクスチャであり、上記のTextureとは異なり方向ベクトルを引数に取る。</p>
-<p><code> vec4 col = Texture(iChannel0,dir)</code></p>
-<p>このような形でチャンネルを使用することで色々な表現ができるようになる。</p>
-<h2 id="buffer">Buffer</h2>
-<p>ShaderToyのテキストエディタの上のほうに＋のタブがある。このタブを押すことでBufferAなどを選択すると、Bufferと呼ばれるものを作ることができる。BufferではImage(最初にあるやつ)と同じようにかくことができ、最終的な出力をmainImage内でfragColorに入れる形となる。</p>
-<p>Newを押して最初にあるImageというタブではShaderToyで出す「画像の色」を出力するものであり、最終的な画像を出す部分である。一方でBufferに書かれた処理というのはそのままでは画面に出てくることはない。</p>
-<p>Bufferの出力というのはiChannelに設定し、Texture関数から得ることで使うことができる。
-iChannelを開き、項目を見るとBufferAなどがあるはずです。それらを選択すると対応したBufferの出力をテクスチャとして得ることができます。チャンネルはBufferごとにそれぞれ４つあり、自らを選択することも可能なため、チャンネルに自らを設定することで<strong>自分の前の出力を得ることが可能である</strong>。</p>
-<p>ずっとネックとなっていた「どうやって前の出力を得るのか」はこのBufferによって解決しました。私の実装ではBufferAにパストレーサー本体を記述し、出力に前の出力を受け取り、累計の輝度を出力する形となっています（後に平均を取る）。</p>
-<p>このようにBufferとiChannelを使うことで前の出力を使うことができるが、これ以外にもテクスチャ生成と他の処理を分けるなどとImageだけでは出来なかった処理方法ができるようになります。</p>
-<h2 id="パストレーサーの実装">パストレーサーの実装</h2>
-<p>私が作ったパストレーサーは以下のような形で実装しました。</p>
-<ul>
-<li>BufferA</li>
-</ul>
-<p>パストレーサー本体、自らのバッファをiChannel0に設定し前の処理内容を取れるようにしている。パストレーサーの処理を書き、最後の部分でiChannel0の値を取り、今回計算した輝度を加算したものを出力としている。
-なので、このバッファは今までの輝度の合計を出力としており、Imageでは直接出力せずフレームで割って出力している。</p>
-<ul>
-<li>BufferB</li>
-</ul>
-<p>BufferBではフレーム数を計算するバッファである。自らのバッファをiChannelに設定して、毎フレーム+1.0を加算していく処理を行っている。このため、バッファに記録されている値はフレーム数である。</p>
-<ul>
-<li>Image</li>
-</ul>
-<p>表示を行う。チャンネルにBufferAとBufferBをそれぞれ設定しており、上記の通りBuffferAの値をBufferBのフレーム数で割った値を出力することで最終的な画像を表示することができる。</p>
-<p><a href="https://www.shadertoy.com/view/ftXXzj">実装例</a></p>
-<p>ただし私が実装した例では途中のカメラ移動等を前提としていないため、処理中に数値を変えるなどをすると最初に戻る必要がある。これをどうにかするにはカメラの位置などが変わったことを確認し、BufferAやBufferBがリセットされるようにしなくてはいけない。（どうにかしたい）</p>
-<h2 id="最後に">最後に</h2>
-<p>CPUパストレーサーでBRDFの実装をすると一々結果を確認するのに数１０秒とか数分待たなくてはならず割と面倒でしたので、GPUでリアルタイムで見れるようにしたいということでShaderToyでGPUパストレーサーを作りました。</p>
-<p>GPUを使用したパストレーサーを作るのはShaderToyにこだわる必要はなくOpenGLなどでもできますが、そちらを使用するとなるとそもそもライブラリの環境を整えることが少々大変だと思います。しかしながら、ShaderToyはそうした環境を整える必要もなく、Bufferの使い方さえ知っていれば結構簡単に作ることができるので他の方法に比べ簡単だと思います。</p>
-<p>ですので、初めてGPUパストレーサー実装をしたいのであればShaderToyで実装するのが一番手っ取り早く、そこからOpenGLやWebGLなどに移植するといった手順でやると直接やるよりはすんなりいけるのではないのかと思います。</p>
-<p>また、BufferはShaderToyですごいシェーダ―をみるとよく使われているのを見ます。どうやってるのだろうと思ってみたシェーダーで急にBufferAだとかが出てきて、そもそもBufferが何なのかよくわからなく結局全然読めんということがありました。初心者がこうした未知の機能にで会い、あまり資料がないとなんとも混乱してしまいます。
-もし私のような初心者がこの記事を見て「よく見るBufferってそうゆうもんなのか」とBufferについて何かしら理解を得て、こうした混乱がなくなる手助けになれば幸いです。</p>
 
+            <div class="columns">
+                <div class="column is-9">
+                    <div class="tile is-child box">
+                        <div class="content">
+                            <p>　数々の素晴らしい<del>変態</del>シェーダーが投稿されているShadertoyだが、私のような初心者は何をやっているかさっぱりわからず「すごいなあ」としか言えない。
+                                今年からレイトレーシングを学び始めて、
+                                「Shadertoyでもレイトレできないだろうか」と考えて調べてみると結構な量のレイトレを実装したシェーダーが投稿されいるのを見て、やれるんだったらやってみようとしました。
+                            </p>
+                            <p>　私も前の描画さえ持ち出せればそれっぽいのは作れるんじゃないかと考えていたのですが、肝心の描画持ち出しのやり方がわからず、また投稿されてるシェーダーを見ても中々何をやってるかがわからないものでしばらくどんづまっていました。
+                                　</p>
+                            <p>最近になってようやく色々調べていくうちにShadertoyには描画情報を保存できるチャンネルと別々の描画処理をできるBufferという機能があることを知って、何とかパストレーシングの実装に漕ぎつくことができました。
+                                Bufferについての日本語記事がほとんどなかった（私が調べきれてないだけかも）ので折角なので私が実装したパストレーサーとともにBufferの使い方などをまとめておこうと思います。
+                            </p>
+                            <p>※著者の勉強不足のため、間違っている記述があるかもしれないことに留意してください。</p>
+                            <h2 id="shadertoyのichannel">ShaderToyのiChannel</h2>
+                            <p>ShaderToyのコードの場所の下に何やらiChannel0などと書かれるものがあります。これがチャンネルと呼ばれるもので、ShaderToyでテクスチャなどを使用したいとなるとこのiChannelにそれらを設定し、そこから読み取るという形で行います。
+                            </p>
+                            <p><img src="../media/pic1.jpg" alt="test"></p>
+                            <p>チャンネルの場所をクリックすると色々と選択できるタブが出てくると思いますが、ここはShaderToyが用意しているテクスチャや動画、音声そしてBufferを選択することで、チャンネルにそれらを設定することができます。
+                            </p>
+                            <p>チャンネルから設定したものの情報を受け取る方法についてはチャンネルに設定したものによって異なる。</p>
+                            <ul>
+                                <li>BufferやTextureの場合</li>
+                            </ul>
+                            <p>BufferまたはTextureの場合、Textureという関数にチャンネル名とuvを与えることで情報を得ることができる。この場合ではTexture関数はvec4で色を返す。
+                            </p>
+                            <p><code> vec4 col = Texture(iChannel0,uv)</code></p>
+                            <ul>
+                                <li>CubeMapの場合</li>
+                            </ul>
+                            <p>CubeMapは背景用のテクスチャであり、上記のTextureとは異なり方向ベクトルを引数に取る。</p>
+                            <p><code> vec4 col = Texture(iChannel0,dir)</code></p>
+                            <p>このような形でチャンネルを使用することで色々な表現ができるようになる。</p>
+                            <h2 id="buffer">Buffer</h2>
+                            <p>ShaderToyのテキストエディタの上のほうに＋のタブがある。このタブを押すことでBufferAなどを選択すると、Bufferと呼ばれるものを作ることができる。BufferではImage(最初にあるやつ)と同じようにかくことができ、最終的な出力をmainImage内でfragColorに入れる形となる。
+                            </p>
+                            <p>Newを押して最初にあるImageというタブではShaderToyで出す「画像の色」を出力するものであり、最終的な画像を出す部分である。一方でBufferに書かれた処理というのはそのままでは画面に出てくることはない。
+                            </p>
+                            <p>Bufferの出力というのはiChannelに設定し、Texture関数から得ることで使うことができる。
+                                iChannelを開き、項目を見るとBufferAなどがあるはずです。それらを選択すると対応したBufferの出力をテクスチャとして得ることができます。チャンネルはBufferごとにそれぞれ４つあり、自らを選択することも可能なため、チャンネルに自らを設定することで<strong>自分の前の出力を得ることが可能である</strong>。
+                            </p>
+                            <p>ずっとネックとなっていた「どうやって前の出力を得るのか」はこのBufferによって解決しました。私の実装ではBufferAにパストレーサー本体を記述し、出力に前の出力を受け取り、累計の輝度を出力する形となっています（後に平均を取る）。
+                            </p>
+                            <p>このようにBufferとiChannelを使うことで前の出力を使うことができるが、これ以外にもテクスチャ生成と他の処理を分けるなどとImageだけでは出来なかった処理方法ができるようになります。
+                            </p>
+                            <h2 id="パストレーサーの実装">パストレーサーの実装</h2>
+                            <p>私が作ったパストレーサーは以下のような形で実装しました。</p>
+                            <ul>
+                                <li>BufferA</li>
+                            </ul>
+                            <p>パストレーサー本体、自らのバッファをiChannel0に設定し前の処理内容を取れるようにしている。パストレーサーの処理を書き、最後の部分でiChannel0の値を取り、今回計算した輝度を加算したものを出力としている。
+                                なので、このバッファは今までの輝度の合計を出力としており、Imageでは直接出力せずフレームで割って出力している。</p>
+                            <ul>
+                                <li>BufferB</li>
+                            </ul>
+                            <p>BufferBではフレーム数を計算するバッファである。自らのバッファをiChannelに設定して、毎フレーム+1.0を加算していく処理を行っている。このため、バッファに記録されている値はフレーム数である。
+                            </p>
+                            <ul>
+                                <li>Image</li>
+                            </ul>
+                            <p>表示を行う。チャンネルにBufferAとBufferBをそれぞれ設定しており、上記の通りBuffferAの値をBufferBのフレーム数で割った値を出力することで最終的な画像を表示することができる。
+                            </p>
+                            <p><a href="https://www.shadertoy.com/view/ftXXzj">実装例</a></p>
+                            <p>ただし私が実装した例では途中のカメラ移動等を前提としていないため、処理中に数値を変えるなどをすると最初に戻る必要がある。これをどうにかするにはカメラの位置などが変わったことを確認し、BufferAやBufferBがリセットされるようにしなくてはいけない。（どうにかしたい）
+                            </p>
+                            <h2 id="最後に">最後に</h2>
+                            <p>CPUパストレーサーでBRDFの実装をすると一々結果を確認するのに数１０秒とか数分待たなくてはならず割と面倒でしたので、GPUでリアルタイムで見れるようにしたいということでShaderToyでGPUパストレーサーを作りました。
+                            </p>
+                            <p>GPUを使用したパストレーサーを作るのはShaderToyにこだわる必要はなくOpenGLなどでもできますが、そちらを使用するとなるとそもそもライブラリの環境を整えることが少々大変だと思います。しかしながら、ShaderToyはそうした環境を整える必要もなく、Bufferの使い方さえ知っていれば結構簡単に作ることができるので他の方法に比べ簡単だと思います。
+                            </p>
+                            <p>ですので、初めてGPUパストレーサー実装をしたいのであればShaderToyで実装するのが一番手っ取り早く、そこからOpenGLやWebGLなどに移植するといった手順でやると直接やるよりはすんなりいけるのではないのかと思います。
+                            </p>
+                            <p>また、BufferはShaderToyですごいシェーダ―をみるとよく使われているのを見ます。どうやってるのだろうと思ってみたシェーダーで急にBufferAだとかが出てきて、そもそもBufferが何なのかよくわからなく結局全然読めんということがありました。初心者がこうした未知の機能にで会い、あまり資料がないとなんとも混乱してしまいます。
+                                もし私のような初心者がこの記事を見て「よく見るBufferってそうゆうもんなのか」とBufferについて何かしら理解を得て、こうした混乱がなくなる手助けになれば幸いです。
+                            </p>
+
+                        </div>
+                    </div>
+                </div>
+                <div class="column is-3">
+                    <div class="card">
+                        <div class="card-content">
+                            <h1 class="title is-5">Tags</h1>
+                            <div class="tags">
+
+                                <span class="tag"><a
+                                        href="https://kinakomoti-321.github.io/Memorandom/tags/raytracing">raytracing</a></span>
+
+                                <span class="tag"><a
+                                        href="https://kinakomoti-321.github.io/Memorandom/tags/shadertoy">shadertoy</a></span>
+
+                            </div>
+                        </div>
+                    </div><br>
+                    <div class="card">
+                        <div class="card-content">
+                            <h1 class="title is-5">Recent posts</h1>
+
+                            <h1><a
+                                    href="https://kinakomoti-321.github.io/Memorandom/post/howtobuffer/howtobuffer/">ShadertoyでBufferを使ってパストレーサーを実装した</a>
+                            </h1>
+                            <time class="has-text-grey-light is-size-7">28 June 2021</time>
+
+                            <h1><a
+                                    href="https://kinakomoti-321.github.io/Memorandom/post/shereuv/test1/">レイトレで背景（スカイスフィア）を作る方法</a>
+                            </h1>
+                            <time class="has-text-grey-light is-size-7">27 June 2021</time>
+
+                        </div>
+                    </div>
+                    <br>
+
+
+
+
+
+                    <div class="card">
+                        <div class="card-content">
+                            <h1 class="title is-5">Related posts</h1>
+
+
+                            <h1><a
+                                    href="https://kinakomoti-321.github.io/Memorandom/post/shereuv/test1/">レイトレで背景（スカイスフィア）を作る方法</a>
+                            </h1>
+                            <time class="has-text-grey-light is-size-7">27 June 2021</time>
+
+                        </div>
+                    </div>
+
+
+                    <br>
+                    <div class="card">
+                        <div class="card-content">
+                            <h1 class="title is-5">Archives</h1>
+
+                            <a href="https://kinakomoti-321.github.io/Memorandom/archives/2021">2021</a> (2)<br>
+
+                        </div>
+                    </div>
+
+                </div>
             </div>
+
+
         </div>
     </div>
-    <div class="column is-3">
-        <div class="card">
-    <div class="card-content">
-        <h1 class="title is-5">Tags</h1>
-        <div class="tags">
-        
-            <span class="tag"><a href="https://kinakomoti-321.github.io/Memorandom/tags/raytracing">raytracing</a></span>
-        
-            <span class="tag"><a href="https://kinakomoti-321.github.io/Memorandom/tags/shadertoy">shadertoy</a></span>
-        
-        </div>          
-    </div>
-</div><br>
-        <div class="card">
-    <div class="card-content">
-        <h1 class="title is-5">Recent posts</h1>
-        
-            <h1><a href="https://kinakomoti-321.github.io/Memorandom/post/howtobuffer/howtobuffer/">ShadertoyでBufferを使ってパストレーサーを実装した</a></h1>
-            <time class="has-text-grey-light is-size-7">28 June 2021</time>
-        
-            <h1><a href="https://kinakomoti-321.github.io/Memorandom/post/shereuv/test1/">レイトレで背景（スカイスフィア）を作る方法</a></h1>
-            <time class="has-text-grey-light is-size-7">27 June 2021</time>
-        
-    </div>
-</div>
-    <br>
-                
-  
+
+    <footer class="footer has-background-grey-darker has-text-white">
 
 
-
-<div class="card">
-    <div class="card-content">
-        <h1 class="title is-5">Related posts</h1>
-      
-      
-            <h1><a href="https://kinakomoti-321.github.io/Memorandom/post/shereuv/test1/">レイトレで背景（スカイスフィア）を作る方法</a></h1>
-            <time class="has-text-grey-light is-size-7">27 June 2021</time>
-      
-    </div>
-</div>
-
-    
-<br>
-        <div class="card">
-    <div class="card-content">
-        <h1 class="title is-5">Archives</h1>
-        
-            <a href="https://kinakomoti-321.github.io/Memorandom/archives/2021">2021</a> (2)<br>
-        
-    </div>
-</div>
-
-    </div>
-</div>
-
-
-    </div>
-</div>
-
-<footer class="footer has-background-grey-darker has-text-white">
-
-
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css"
-        integrity="sha384-dbVIfZGuN1Yq7/1Ocstc1lUEm+AT+/rCkibIcC/OmWo5f0EA48Vf8CytHzGrSwbQ" crossorigin="anonymous">
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js"
-        integrity="sha384-2BKqo+exmr9su6dir+qCw08N2ZKRucY4PrGQPPWU1A7FtlCGjmEGFqXCv5nyM5Ij"
-        crossorigin="anonymous"></script>
-    <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js"
-        integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
-        onload="renderMathInElement(document.body);"></script>
-    <script>
-        document.addEventListener("DOMContentLoaded", function () {
-            renderMathInElement(document.body, {
-                delimiters: [
-                    { left: "$$", right: "$$", display: true },
-                    { left: "$", right: "$", display: false }]
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.css"
+            integrity="sha384-dbVIfZGuN1Yq7/1Ocstc1lUEm+AT+/rCkibIcC/OmWo5f0EA48Vf8CytHzGrSwbQ" crossorigin="anonymous">
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/katex.min.js"
+            integrity="sha384-2BKqo+exmr9su6dir+qCw08N2ZKRucY4PrGQPPWU1A7FtlCGjmEGFqXCv5nyM5Ij"
+            crossorigin="anonymous"></script>
+        <script defer src="https://cdn.jsdelivr.net/npm/katex@0.10.1/dist/contrib/auto-render.min.js"
+            integrity="sha384-kWPLUVMOks5AQFrykwIup5lo0m3iMkkHrD0uJ4H5cjeGihAutqP0yW0J6dpFiVkI" crossorigin="anonymous"
+            onload="renderMathInElement(document.body);"></script>
+        <script>
+            document.addEventListener("DOMContentLoaded", function () {
+                renderMathInElement(document.body, {
+                    delimiters: [
+                        { left: "$$", right: "$$", display: true },
+                        { left: "$", right: "$", display: false }]
+                });
             });
-        });
-    </script>
-    <div class="content has-text-centered">
-        <p>
-            <span class="icon is-large"><a href="https://twitter.com/" class="mysocial" rel="me"><i
-                        class="fab fa-twitter fa-3x"></i></a></span>&nbsp;&nbsp;
-            <span class="icon is-large"><a href="https://www.youtube.com/" class="mysocial" rel="me"><i
-                        class="fab fa-youtube fa-3x"></i></a></span>&nbsp;&nbsp;
-            <span class="icon is-large"><a href="https://github.com/" class="mysocial" rel="me"><i
-                        class="fab fa-github fa-3x"></i></a></span>&nbsp;&nbsp;
-            <br><br>
-            Copyright &copy; 3D Memorandom 2021 - Theme by <a href="https://jeffprod.com"
-                class="mysocial">JeffProd.com</a>
-            - <a class="mysocial" href="https://kinakomoti-321.github.io/Memorandom/%20about">About</a>
-        </p>
-    </div>
-</footer>
+        </script>
+        <div class="content has-text-centered">
+            <p>
+                <span class="icon is-large"><a href="https://twitter.com/" class="mysocial" rel="me"><i
+                            class="fab fa-twitter fa-3x"></i></a></span>&nbsp;&nbsp;
+                <span class="icon is-large"><a href="https://www.youtube.com/" class="mysocial" rel="me"><i
+                            class="fab fa-youtube fa-3x"></i></a></span>&nbsp;&nbsp;
+                <span class="icon is-large"><a href="https://github.com/" class="mysocial" rel="me"><i
+                            class="fab fa-github fa-3x"></i></a></span>&nbsp;&nbsp;
+                <br><br>
+                Copyright &copy; 3D Memorandom 2021 - Theme by <a href="https://jeffprod.com"
+                    class="mysocial">JeffProd.com</a>
+                - <a class="mysocial" href="https://kinakomoti-321.github.io/Memorandom/%20about">About</a>
+            </p>
+        </div>
+    </footer>
 
-<script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
+    <script defer src="https://use.fontawesome.com/releases/v5.1.0/js/all.js"></script>
 </body>
 
 </html>
