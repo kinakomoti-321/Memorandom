@@ -18,11 +18,11 @@ Bufferについての日本語記事がほとんどなかった（私が調べ�
 ## ShaderToyのiChannel
 ShaderToyのコードの場所の下に何やらiChannel0などと書かれるものがあります。これがチャンネルと呼ばれるもので、ShaderToyでテクスチャなどを使用したいとなるとこのiChannelにそれらを設定し、そこから読み取るという形で行います。
 
-{{< figure src="../pic1.png" title="Screenshot" class="center" width="320" height="640" >}}
+{{< figure src="../pic1.png" title="Screenshot" class="center">}}
 
 チャンネルの場所をクリックすると色々と選択できるタブが出てくると思いますが、ここはShaderToyが用意しているテクスチャや動画、音声そしてBufferを選択することで、チャンネルにそれらを設定することができます。
 
-{{< figure src="../pic2.png" title="Screenshot" class="center" width="320" height="640" >}}
+{{< figure src="../pic2.png" title="Screenshot" class="center">}}
 
 チャンネルから設定したものの情報を受け取る方法についてはチャンネルに設定したものによって異なる。
 - BufferやTextureの場合
