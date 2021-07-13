@@ -5,10 +5,19 @@
     <description>Recent content in Raytracing on 3D Memorandom</description>
     <generator>Hugo -- gohugo.io</generator>
     <language>ja-jp</language>
-    <lastBuildDate>Sun, 27 Jun 2021 15:58:28 +0900</lastBuildDate>
+    <lastBuildDate>Mon, 28 Jun 2021 22:20:03 +0900</lastBuildDate>
     
         <atom:link href="https://kinakomoti-321.github.io/Memorandom/tags/raytracing/index.xml" rel="self" type="application/rss+xml" />
     
+    
+    <item>
+      <title>ShadertoyでBufferを使ってパストレーサーを実装した</title>
+      <link>https://kinakomoti-321.github.io/Memorandom/2021/howtobuffer/</link>
+      <pubDate>Mon, 28 Jun 2021 22:20:03 +0900</pubDate>
+      
+      <guid>https://kinakomoti-321.github.io/Memorandom/2021/howtobuffer/</guid>
+      <description>数々の素晴らしい変態シェーダーが投稿されているShadertoyだが、私のような初心者は何をやっているかさっぱりわからず「すごいなあ」としか</description>
+    </item>
     
     <item>
       <title>レイトレで背景（スカイスフィア）を作る方法</title>
