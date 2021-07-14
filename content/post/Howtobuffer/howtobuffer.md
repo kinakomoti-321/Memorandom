@@ -18,7 +18,7 @@ Bufferについての日本語記事がほとんどなかった（私が調べ�
 ## ShaderToyのiChannel
 ShaderToyのコードの場所の下に何やらiChannel0などと書かれるものがあります。これがチャンネルと呼ばれるもので、ShaderToyでテクスチャなどを使用したいとなるとこのiChannelにそれらを設定し、そこから読み取るという形で行います。
 
-{{< figure src="../pic1.png" class="center">}}
+{{< figure src="../pic3.png" class="center">}}
 
 チャンネルの場所をクリックすると色々と選択できるタブが出てくると思いますが、ここはShaderToyが用意しているテクスチャや動画、音声そしてBufferを選択することで、チャンネルにそれらを設定することができます。
 
@@ -42,12 +42,23 @@ CubeMapは背景用のテクスチャであり、上記のTextureとは異なり
 ## Buffer
 ShaderToyのテキストエディタの上のほうに＋のタブがある。このタブを押すことでBufferAなどを選択すると、Bufferと呼ばれるものを作ることができる。BufferではImage(最初にあるやつ)と同じようにかくことができ、最終的な出力をmainImage内でfragColorに入れる形となる。
 
-Newを押して最初にあるImageというタブではShaderToyで出す「画像の色」を出力するものであり、最終的な画像を出す部分である。一方でBufferに書かれた処理というのはそのままでは画面に出てくることはない。
+{{< figure src="../pic4.png" class="center">}}
+{{< figure src="../pic5.png" class="center">}}
+
+最初にからあるImageというタブではShaderToyで出す「画像の色」を出力するものであり、最終的な画像を出す部分である。一方でBufferに書かれた処理というのはそのままでは画面に出てくることはない。
 
 Bufferの出力というのはiChannelに設定し、Texture関数から得ることで使うことができる。
 iChannelを開き、項目を見るとBufferAなどがあるはずです。それらを選択すると対応したBufferの出力をテクスチャとして得ることができます。チャンネルはBufferごとにそれぞれ４つあり、自らを選択することも可能なため、チャンネルに自らを設定することで**自分の前の出力を得ることが可能である**。
 
 ずっとネックとなっていた「どうやって前の出力を得るのか」はこのBufferによって解決しました。私の実装ではBufferAにパストレーサー本体を記述し、出力に前の出力を受け取り、累計の輝度を出力する形となっています（後に平均を取る）。
+
+実際に前の出力を使った簡単なサンプルを作りました。
+
+[サンプル](https://www.shadertoy.com/view/ftfXRs)
+
+ImageはBufferAの出力をそのまま表示するような形で動いており、BufferAでは本筋の処理が行われております。BufferAのiChannel0には自ら(BufferA)が設定されており、前回の出力をiChannelから得ることができます。実際にTexture(iChannel0,uv)という部分でiChannel0の中身を取っており、それを加算やらで色を作る処理をして画面を作っています。
+
+{{< figure src="../pic6.png" class="center">}}
 
 このようにBufferとiChannelを使うことで前の出力を使うことができるが、これ以外にもテクスチャ生成と他の処理を分けるなどとImageだけでは出来なかった処理方法ができるようになります。
 
@@ -68,6 +79,8 @@ BufferBではフレーム数を計算するバッファである。自らのバ�
 表示を行う。チャンネルにBufferAとBufferBをそれぞれ設定しており、上記の通りBuffferAの値をBufferBのフレーム数で割った値を出力することで最終的な画像を表示することができる。
 
 [実装例](https://www.shadertoy.com/view/ftXXzj)
+
+{{< figure src="../pic7.png" class="center">}}
 
 ただし私が実装した例では途中のカメラ移動等を前提としていないため、処理中に数値を変えるなどをすると最初に戻る必要がある。これをどうにかするにはカメラの位置などが変わったことを確認し、BufferAやBufferBがリセットされるようにしなくてはいけない。（どうにかしたい）
 
