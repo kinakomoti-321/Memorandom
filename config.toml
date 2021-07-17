@@ -1,6 +1,6 @@
-baseURL = "https://kinakomoti-321.github.io/Memorandom/"
+baseURL = "https://kinakomoti-321.github.io/mochimochi3D/"
 languageCode = "ja-jp"
-title = "3D Memorandom"
+title = "MochiMochi3D"
 theme = "hugo-blog-jeffprod"
 publishDir = "docs"
 hasCJKLanguage = true
@@ -8,3 +8,5 @@ hasCJKLanguage = true
 [taxonomies]
     tag = "tags"
     archive = "archives"
+
+[param]
