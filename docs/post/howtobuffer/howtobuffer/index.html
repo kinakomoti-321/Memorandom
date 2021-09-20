@@ -112,7 +112,7 @@ iChannelを開き、項目を見るとBufferAなどがあるはずです。そ�
 <figure class="center"><img src="../pic7.png"/>
 </figure>
 
-<p>Bufferさえ使えれば、後はほとんどCPUパストレーサーと同様の処理をGLSLに翻訳してあげればこのように割かし簡単に作ることができます。
+<p>Bufferさえ使えれば、後はほとんどCPUパストレーサーと同様の処理をGLSLに翻訳してあげればこのように作ることができます。
 ただし私が実装した例では途中のカメラ移動等を前提としていないため、処理中に数値を変えるなどをすると最初に戻る必要があります。これをどうにかするにはカメラの位置などが変わったことを確認できるような仕組みを作って、BufferAやBufferBがリセットされるようにしなくてはいけません。（どうにかしたい）</p>
 <h2 id="最後に">最後に</h2>
 <p>CPUパストレーサーでBRDFの実装をすると一々結果を確認するのに数１０秒とか数分待たなくてはならず割と面倒でしたので、GPUでリアルタイムで見れるようにしたいということでShaderToyでGPUパストレーサーを作りました。</p>
@@ -140,6 +140,9 @@ iChannelを開き、項目を見るとBufferAなどがあるはずです。そ�
         <div class="card">
     <div class="card-content">
         <h1 class="title is-5">Recent posts</h1>
+        
+            <h1><a href="https://kinakomoti-321.github.io/mochimochi3D/post/threejsraytracer/threejsraytracer/">ThreejsでPathtracerを実装してみた</a></h1>
+            <time class="has-text-grey-light is-size-7">17 September 2021</time>
         
             <h1><a href="https://kinakomoti-321.github.io/mochimochi3D/post/howtobuffer/howtobuffer/">ShadertoyでBufferを使ってパストレーサーを実装した</a></h1>
             <time class="has-text-grey-light is-size-7">28 June 2021</time>
@@ -172,7 +175,7 @@ iChannelを開き、項目を見るとBufferAなどがあるはずです。そ�
     <div class="card-content">
         <h1 class="title is-5">Archives</h1>
         
-            <a href="https://kinakomoti-321.github.io/mochimochi3D/archives/2021">2021</a> (2)<br>
+            <a href="https://kinakomoti-321.github.io/mochimochi3D/archives/2021">2021</a> (3)<br>
         
     </div>
 </div>
