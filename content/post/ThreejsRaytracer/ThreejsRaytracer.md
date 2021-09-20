@@ -3,7 +3,6 @@ title: "ThreejsでPathtracerを実装してみた"
 date: 2021-09-17T22:27:11+09:00
 archives: "2021"
 tags: [raytracing]
-author: John SMITH
 draft : false
 ---
 
