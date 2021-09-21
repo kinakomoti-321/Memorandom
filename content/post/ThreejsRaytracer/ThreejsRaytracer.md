@@ -312,4 +312,11 @@ HDRIを読み込むライブラリとしてThreejsにはRGBELoader.jsという�
 - ポリゴンを読み込んでレイトレする。(BVHなどの実装)
 - Macrofacetの金属やDisneyBRDFなどの様々な質感の実装
 - シーン情報を他のソフトで作って読み込ませる
+
 といったことを追加していきたいです。
+
+### 参考文献
+- [WebGL+GLSLによる超高速なパストレーシング](https://qiita.com/gam0022/items/18bb3612d7bdb6f4360a) by @gam022
+- [レイトレース：薄いレンズのカメラ](https://t-pot.com/program/121_RayTraceThinLens/index.html)
+- [Three.jsでオフスクリーンレンダリング](https://www.pentacreation.com/blog/2021/05/210504.html) by Pent@creation Blog
+- [three.js + キューブマップでお手軽IBL](https://qiita.com/kaneta1992/items/df1ae53e352f6813e0cd) by @kaneta1992
